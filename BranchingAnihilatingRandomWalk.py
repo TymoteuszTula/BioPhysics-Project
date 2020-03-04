@@ -52,11 +52,15 @@ class BARandomWalk:
                 self.board[walker[0], walker[1]] = 1
                 walker += move_vector
                 # deleting walker if it hits the trace or the ends of board
-                if ((self.board[walker[0],walker[1]] == 1) or (walker[0] < 0) or 
+                if ((walker[0] < 0) or 
                     (walker[0] >= self.N) or (walker[1] < 0) or 
                     (walker[1] >= self.N)): 
                     self.r_walkers.pop(i_walker)
                     i_walker -= 1
+                elif (self.board[walker[0],walker[1]] == 1):
+                    self.r_walkers.pop(i_walker)
+                    i_walker -= 1
+
             else:
                 r_spawn = 4*np.random.rand()
                 spawn_vector = ((r_spawn < 1) * np.array([1,0]) 
@@ -66,9 +70,11 @@ class BARandomWalk:
                 # spawning new walker
                 new_walker = walker + spawn_vector
                 self.r_walkers.append(new_walker)
-                if ((self.board[new_walker[0],new_walker[1]] == 1) or (new_walker[0] < 0) or 
+                if ((new_walker[0] < 0) or 
                     (new_walker[0] >= self.N) or (new_walker[1] < 0) or 
                     (new_walker[1] >= self.N)):
+                    self.r_walkers.pop(-1)
+                elif (self.board[new_walker[0],new_walker[1]] == 1):
                     self.r_walkers.pop(-1)
             i_walker += 1
         
@@ -107,11 +113,13 @@ class BARandomWalk2:
                 move_vector, last_move = self.move_walker(walker)
                 self.board[walker[0][0], walker[0][1]] = 1
                 walker[0] += move_vector
-                walker[1] += last_move
+                walker[1] = last_move
                 
-                if ((self.board[walker[0][0], walker[0][1] == 1]) or (
-                    walker[0][0] < 0) or (walker[0][0] >= self.N) or (
+                if ((walker[0][0] < 0) or (walker[0][0] >= self.N) or (
                     walker[0][1] < 0) or (walker[0][1] >= self.N)):
+                    self.r_walkers.pop(i_walker)
+                    i_walker -= 1
+                elif (self.board[walker[0][0], walker[0][1]] == 1):
                     self.r_walkers.pop(i_walker)
                     i_walker -= 1
                     
@@ -122,14 +130,16 @@ class BARandomWalk2:
                               +(r_spawn >= 2 and r_spawn < 3) * VEC_UP
                               +(r_spawn >=3) * VEC_DOWN)
                 # spawning new walker
-                new_walker = walker[:]
+                new_walker = [np.copy(walker[0]), 0]
                 new_walker[0] += spawn_vector
-                new_walker[1] = 0
                 self.r_walkers.append(new_walker)
-                if ((self.board[new_walker[0][0],new_walker[0][1]] == 1) or (new_walker[0][0] < 0) or 
+                if ((new_walker[0][0] < 0) or 
                     (new_walker[0][0] >= self.N) or (new_walker[0][1] < 0) or 
                     (new_walker[0][1] >= self.N)):
                     self.r_walkers.pop(-1)
+                elif (self.board[new_walker[0][0],new_walker[0][1]] == 1):
+                    self.r_walkers.pop(-1)
+
             i_walker += 1
         
     
@@ -168,14 +178,14 @@ class BARandomWalk2:
             print(rand)
             return (((rand == 0) * VEC_UP +
                     (rand == 1) * VEC_RIGHT + (rand == 2) * VEC_LEFT),
-                    (rand == 0) * (rand + 1) + (rand == 1 or rand == 2) *
+                    (rand == 0) * (rand + 1) + (rand > 0) *
                     (rand + 2))
         if walker[1] == 3:
             rand = np.random.randint(3)
             print(rand)
             return (((rand == 0) * VEC_UP + (rand == 1) * VEC_DOWN 
                     + (rand == 2) * VEC_LEFT),
-                    (rand == 0 or rand == 1) * (rand + 1) + (rand == 2) *
+                    (rand < 2) * (rand + 1) + (rand == 2) *
                     (rand + 2))
         if walker[1] == 4:
             rand = np.random.randint(3)
@@ -189,11 +199,11 @@ class BARandomWalk2:
 # main code
 
 def main():
-    N = 100
-    sigma = 0.5
+    N = 10
+    sigma = 0.8
     no_steps = 200000
     
-    randomWalkGenerator = BARandomWalk2(N, sigma)
+    randomWalkGenerator = BARandomWalk(N, sigma)
     randomWalkGenerator.whole_evolution(no_steps)
     
     trace = randomWalkGenerator.return_trace_matrix()

@@ -204,10 +204,12 @@ class BARandomWalk3:
         self.r_walkers = []
         self.r_walkers.append(np.random.randint(N, size=(2)))
         self.N = N
+        self.term_probability = []
 
     def one_epoch_evolution(self):
         i_walker = 0
         new_walkers = []
+        init_no_of_walkers = len(self.r_walkers)
         
         while i_walker < len(self.r_walkers):
             r_branch = np.random.rand()
@@ -250,8 +252,13 @@ class BARandomWalk3:
                 else:
                     new_walkers.append(new_walker)
             i_walker += 1
+        
+        final_no_of_walkers = len(self.r_walkers)
+        self.term_probability.append((init_no_of_walkers - final_no_of_walkers) /
+                                     init_no_of_walkers)
             
         self.r_walkers = self.r_walkers + new_walkers
+        
 
     def whole_evolution(self):
         while self.r_walkers != []:
@@ -259,6 +266,9 @@ class BARandomWalk3:
 
     def show_trace(self):
         return self.board
+    
+    def show_term_probability(self):
+        return self.term_probability
 
 VEC_DOWN_RIGHT = np.array([-1, 1])
 VEC_DOWN_LEFT = np.array([-1, -1])
@@ -273,10 +283,12 @@ class BARandomWalk4:
         self.r_walkers = []
         self.r_walkers.append(np.random.randint(N, size=(2)))
         self.N = N
+        self.term_probability = []
 
     def one_epoch_evolution(self):
         i_walker = 0
         new_walkers = []
+        init_no_of_walkers = len(self.r_walkers)
         
         while i_walker < len(self.r_walkers):
             r_branch = np.random.rand()
@@ -327,7 +339,10 @@ class BARandomWalk4:
                 else:
                     new_walkers.append(new_walker)
             i_walker += 1
-            
+        
+        final_no_of_walkers = len(self.r_walkers)
+        self.term_probability.append((init_no_of_walkers - final_no_of_walkers) /
+                                     init_no_of_walkers)
         self.r_walkers = self.r_walkers + new_walkers
 
     def whole_evolution(self):
@@ -336,6 +351,9 @@ class BARandomWalk4:
 
     def show_trace(self):
         return self.board
+    
+    def show_term_probability(self):
+        return self.term_probability
 
                 
 def fnn_phase_transition(sigma_min = 0, sigma_max = 2,
@@ -384,16 +402,22 @@ def main(case):
 
     if case == 1:
         N = 100
-        sigma = 0.94
+        sigma = 0.7
         
         randomWalkGenerator = BARandomWalk4(N, sigma)
         randomWalkGenerator.whole_evolution()
         
         trace = randomWalkGenerator.show_trace()
+        term_prob = randomWalkGenerator.show_term_probability()
         
         plt.figure(1)
         plt.imshow(trace)
         plt.show()
+        
+        plt.figure(2)
+        plt.plot(term_prob)
+        plt.show()
+        
     elif case == 2:
         sigma1, density1 = fnn_phase_transition()
         sigma2, density2 = snn_phase_transition()
@@ -408,7 +432,7 @@ def main(case):
 
         plt.show()
     
-main(2)
+main(1)
         
      
         

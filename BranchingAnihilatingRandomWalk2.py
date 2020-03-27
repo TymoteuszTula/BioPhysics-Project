@@ -187,26 +187,28 @@ def main(case):
         plt.show()
             
     if case == 2:
-        N = 50
-        sigma = 2
-        mean = 100
+        N = 100
+        sigma = 1.5
+        mean = 1000
         
         mean_term_probability = np.zeros(36)
+        no_of_mean = np.zeros(36)
         
         for m in range(mean):
             randomWalkGenerator = BARandomWalk(N, sigma)
             randomWalkGenerator.whole_evolution()
             
             gen_array = np.array(randomWalkGenerator.show_generations())
-            if gen_array.shape[0] > 3000:
-                for gen in range(1, 15):
-                    no_of_bi = np.sum(gen == gen_array[:,0])
-                    no_of_an = np.sum(gen == gen_array[:,1])
+            for gen in range(0, 35):
+                no_of_bi = np.sum(gen == gen_array[:,0])
+                no_of_an = np.sum(gen == gen_array[:,1])
+                if (no_of_bi + no_of_an):
                     mean_term_probability[gen] += no_of_an / (no_of_bi + no_of_an)
-                print("m = ", m)
+                    no_of_mean[gen] += 1
+            print("m = ", m)
                 
         
-        mean_term_probability /= mean
+        mean_term_probability /= no_of_mean
         
         print(mean_term_probability)
         

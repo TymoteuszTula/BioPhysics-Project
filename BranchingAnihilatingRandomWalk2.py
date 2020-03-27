@@ -188,7 +188,7 @@ def main(case):
             
     if case == 2:
         N = 100
-        sigma = 1.5
+        sigma = 2
         mean = 1000
         
         mean_term_probability = np.zeros(36)

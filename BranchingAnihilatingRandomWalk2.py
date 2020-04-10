@@ -86,12 +86,14 @@ class BARandomWalk3:
     
 class BARandomWalk:
     
-    def __init__(self, N, sigma):
+    def __init__(self, Nx, Ny, sigma):
         self.prob_branch = sigma / (1 + sigma)
-        self.board = np.zeros((N,N))
+        self.board = np.zeros((Nx,Ny))
         self.r_walkers = []
-        self.r_walkers.append([np.random.randint(N, size=(2)), 0, 0])
-        self.N = N
+        self.r_walkers.append([np.array([np.random.randint(Nx),
+                                         np.random.randint(Ny)]), 0, 0])
+        self.Nx = Nx
+        self.Ny = Ny
         self.generation = []
 
     def one_epoch_evolution(self):
@@ -112,9 +114,9 @@ class BARandomWalk:
                 self.r_walkers[i_walker][0] += next_move
 
                 if ((self.r_walkers[i_walker][0][0] < 0) or
-                    (self.r_walkers[i_walker][0][0] >= self.N) or
+                    (self.r_walkers[i_walker][0][0] >= self.Nx) or
                     (self.r_walkers[i_walker][0][1] < 0) or
-                    (self.r_walkers[i_walker][0][1] >= self.N)):
+                    (self.r_walkers[i_walker][0][1] >= self.Ny)):
                     self.generation.append(np.copy(self.r_walkers[i_walker][1:]))
                     self.r_walkers.pop(i_walker)
                     i_walker -= 1
@@ -135,9 +137,9 @@ class BARandomWalk:
                 new_walker[1] = new_walker[2] - 1
 
                 if ((new_walker[0][0] < 0) or
-                    (new_walker[0][0] >= self.N) or
+                    (new_walker[0][0] >= self.Nx) or
                     (new_walker[0][1] < 0) or
-                    (new_walker[0][1] >= self.N)):
+                    (new_walker[0][1] >= self.Ny)):
                     pass
                 elif (self.board[new_walker[0][0], new_walker[0][1]] == 1):
                     pass
@@ -161,10 +163,11 @@ class BARandomWalk:
 def main(case):
 
     if case == 1:
-        N = 100
-        sigma = 1
+        Nx = 40
+        Ny = 20
+        sigma = 1.5
         
-        randomWalkGenerator = BARandomWalk(N, sigma)
+        randomWalkGenerator = BARandomWalk(Nx, Ny, sigma)
         randomWalkGenerator.whole_evolution()
         
         trace = randomWalkGenerator.show_trace()
@@ -187,9 +190,9 @@ def main(case):
         plt.show()
             
     if case == 2:
-        N = 100
-        sigma = 2
-        mean = 1000
+        N = 20
+        sigma = 1
+        mean = 10000
         
         mean_term_probability = np.zeros(36)
         no_of_mean = np.zeros(36)
@@ -219,4 +222,4 @@ def main(case):
             
         
         
-main(2)
+main(1)
